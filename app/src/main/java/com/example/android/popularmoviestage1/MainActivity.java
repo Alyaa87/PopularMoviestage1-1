@@ -38,13 +38,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mRecyclerView = findViewById(R.id.recycler_view);
-        mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager manager = new LinearLayoutManager(MainActivity.this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(manager);
+        mRecyclerView.setHasFixedSize(true);
+
+        loadMovieData();
+
     }
+    private void loadMovieData (){
+        showData();
+        String data =NetworkUtilis.getResponseFromHttpUrl();
+        new AsynTaskMethod().execute(data);
+
+    }
+    private void showData(){
+        mRecyclerView.setVisibility(View.VISIBLE);
+    }
+    private void showErrorMessage() {
+        mRecyclerView.setVisibility(View.INVISIBLE);
+    }
+
 //AsyncTask to fetch movie Data.
     private class AsynTaskMethod extends AsyncTask<String, String, String> {
+
     ProgressDialog pdLoading = new ProgressDialog(MainActivity.this);
     HttpURLConnection conn;
     URL url ;
@@ -60,8 +77,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected String doInBackground(String... params) {
+        if (params.length == 0) {
+            return null;
+        }
+        String movie = params[0];
+        URL RequestUrl = NetworkUtilis.buildUrl(movie);
         try {
-            url = new URL("https://api.themoviedb.org/3/movie/550?api_key=0baa0dbb0893e2930c6885d76a3d4d66");
+            String jsonResponse = NetworkUtilis.getResponseFromHttpUrl();
+            url = new URL("http://api.themoviedb.org/");
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return e.toString();
@@ -72,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             conn.setReadTimeout(READ_TIMEOUT);
             conn.setConnectTimeout(CONNECTION_TIMEOUT);
             conn.setRequestMethod("GET");
-            // setDoOutput to true as we recieve data from json file
+            // setDoOutput to true as we receive data from json file
             conn.setDoOutput(true);
         } catch (IOException e1) {
             e1.printStackTrace();
@@ -110,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
         List<MovieData> data = new ArrayList<>();
             pdLoading.dismiss();
         // Extract data from json and store into ArrayList as class objects
-
             try {
                 JSONObject movieJson = new JSONObject(result);
                 for (int i = 1; i<movieJson.length(); i++) {
@@ -123,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
                 // Setup and Handover data to recyclerview and the adapter
                 mMovieAdapter = (Adapter) new MovieAdapter(MainActivity.this, data);
                 mRecyclerView.setAdapter((RecyclerView.Adapter) mMovieAdapter);
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }

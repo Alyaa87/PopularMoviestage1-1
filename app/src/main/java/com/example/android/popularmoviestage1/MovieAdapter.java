@@ -1,6 +1,7 @@
 package com.example.android.popularmoviestage1;
 
 import android.content.Context;
+import android.graphics.Movie;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     // Inflate the layout when viewholder created
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.movie_details, parent, false);
+        View view = inflater.inflate(R.layout.list_item, parent, false);
         MyHolder holder = new MyHolder(view);
         return holder;
     }
@@ -44,8 +45,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         // Get current position of item in recyclerview to bind data and assign values from list
         MyHolder myHolder = (MyHolder) holder;
         MovieData current = data.get(position);
-
-
+        holder.itemView.findViewById(R.id.recycler_view);
         // load image into imageview using picasso
         Picasso.with(context).load("http://i.imgur.com/DvpvklR.png" + current.poster_image);
 
@@ -64,10 +64,8 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         // create constructor to get widget reference
         public MyHolder(View itemView) {
             super(itemView);
-            title= (TextView) itemView.findViewById(R.id.name_movie);
-            posterImage= (ImageView) itemView.findViewById(R.id.image_movie);
+            title= (TextView) itemView.findViewById(R.id.movie_name);
+            posterImage= (ImageView) itemView.findViewById(R.id.poster_image);
         }
-
     }
-
 }
